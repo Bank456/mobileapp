@@ -26,12 +26,14 @@ class _ExportPageState extends State<ExportPage> {
     setState(() => isLoading = true);
 
     try {
-      // ใส่ start_date และ end_date ใน query params ตาม backend ที่รองรับ
+      // แปลงวันที่เป็นรูปแบบ 'YYYY-MM-DD' เท่านั้น
+      final startDateStr = selectedDateRange!.start.toIso8601String().substring(0, 10);
+      final endDateStr = selectedDateRange!.end.toIso8601String().substring(0, 10);
+
       final url = Uri.parse(
-          'http://10.0.2.2:5000/transactions?user_id=${widget.userId}&start_date=${selectedDateRange!.start.toIso8601String()}&end_date=${selectedDateRange!.end.toIso8601String()}'
+          'http://10.0.2.2:5000/transactions?user_id=${widget.userId}&start_date=$startDateStr&end_date=$endDateStr'
       );
       final response = await http.get(url);
-
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -51,6 +53,7 @@ class _ExportPageState extends State<ExportPage> {
       setState(() => isLoading = false);
     }
   }
+
 
   Future<void> exportCSV() async {
     if (transactions.isEmpty) {
@@ -117,7 +120,7 @@ class _ExportPageState extends State<ExportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("ส่งออกรายงาน")),
+      appBar: AppBar(title: const Text("ສົງອອກລາຍງານ")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

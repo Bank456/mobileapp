@@ -53,12 +53,7 @@ class DrawerMenu extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                _buildListTile(
-                  context,
-                  icon: Icons.home_filled,
-                  title: 'Home',
-                  route: '/dashboard',
-                ),
+
                 _buildListTile(
                   context,
                   icon: Icons.bar_chart,

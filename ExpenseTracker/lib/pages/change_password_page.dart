@@ -25,7 +25,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
     if (newPasswordController.text != confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('รหัสผ่านใหม่กับยืนยันรหัสผ่านไม่ตรงกัน')),
+        const SnackBar(content: Text('ລະຫັດຜ່ານໃໝ່ກັບລະຫັດຜ່ານຢືນຢັນບໍ່ກົງກັນ')),
       );
       return;
     }
@@ -33,7 +33,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     setState(() => loading = true);
 
     try {
-      // ✅ แก้ URL ให้ตรงกับ Flask API จริง
+      // ✅ ປ່ຽນ URL ໃຫ້ກົງກັບ Flask API ຈິງ
       final url = 'http://10.0.2.2:5000/change-password/${widget.userId}';
 
       final response = await http.put(
@@ -52,25 +52,25 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('เปลี่ยนรหัสผ่านสำเร็จ')),
+          const SnackBar(content: Text('ປ່ຽນລະຫັດຜ່ານສຳເລັດ')),
         );
         Navigator.pop(context);
       } else {
         try {
           final data = json.decode(response.body);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('ล้มเหลว: ${data['error'] ?? 'เกิดข้อผิดพลาด'}')),
+            SnackBar(content: Text('ລົ້ມເຫລວ: ${data['error'] ?? 'ເກີດຂໍ້ຜິດພາດ'}')),
           );
         } catch (_) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('เกิดข้อผิดพลาด ไม่สามารถแปลงข้อมูลได้')),
+            const SnackBar(content: Text('ເກີດຂໍ້ຜິດພາດ ບໍ່ສາມາດແປງຂໍ້ມູນໄດ້')),
           );
         }
       }
     } catch (e) {
       setState(() => loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+        SnackBar(content: Text('ເກີດຂໍ້ຜິດພາດ: $e')),
       );
     }
   }
@@ -86,7 +86,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('เปลี่ยนรหัสผ่าน')),
+      appBar: AppBar(title: const Text('ປ່ຽນລະຫັດຜ່ານ')),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
@@ -98,10 +98,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               TextFormField(
                 controller: oldPasswordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'รหัสผ่านเก่า'),
+                decoration: const InputDecoration(labelText: 'ລະຫັດຜ່ານເກົ່າ'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'กรุณากรอกรหัสผ่านเก่า';
+                    return 'ກະລຸນາໃສ່ລະຫັດຜ່ານເກົ່າ';
                   }
                   return null;
                 },
@@ -110,10 +110,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               TextFormField(
                 controller: newPasswordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'รหัสผ่านใหม่'),
+                decoration: const InputDecoration(labelText: 'ລະຫັດຜ່ານໃໝ່'),
                 validator: (value) {
                   if (value == null || value.length < 6) {
-                    return 'กรุณากรอกรหัสผ่านใหม่อย่างน้อย 6 ตัวอักษร';
+                    return 'ກະລຸນາໃສ່ລະຫັດຜ່ານໃໝ່ຢ່າງໜ້ອຍ 6 ຕົວອັກສອນ';
                   }
                   return null;
                 },
@@ -122,10 +122,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               TextFormField(
                 controller: confirmPasswordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'ยืนยันรหัสผ่านใหม่'),
+                decoration: const InputDecoration(labelText: 'ຢືນຢັນລະຫັດຜ່ານໃໝ່'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'กรุณายืนยันรหัสผ่านใหม่';
+                    return 'ກະລຸນາຢືນຢັນລະຫັດຜ່ານໃໝ່';
                   }
                   return null;
                 },
@@ -133,7 +133,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: changePassword,
-                child: const Text('เปลี่ยนรหัสผ่าน'),
+                child: const Text('ປ່ຽນລະຫັດຜ່ານ'),
               )
             ],
           ),

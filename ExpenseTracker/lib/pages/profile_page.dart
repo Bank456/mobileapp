@@ -103,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('โปรไฟล์ของฉัน'),
+        title: const Text('My Profile'),
         centerTitle: true,
         elevation: 0,
         flexibleSpace: Container(
@@ -229,7 +229,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'สรุปการเงิน',
+                    'ສະຫຼຸບການເງິນ',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -239,20 +239,20 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildFinanceItem(
                     icon: Icons.arrow_downward,
                     color: Colors.green,
-                    title: 'รายรับทั้งหมด',
+                    title: 'ລາຍຮັບທັງໝົດ',
                     amount: totalIncome,
                   ),
                   _buildFinanceItem(
                     icon: Icons.arrow_upward,
                     color: Colors.red,
-                    title: 'รายจ่ายทั้งหมด',
+                    title: 'ລາຍຈ່າຍທັງໝົດ',
                     amount: totalExpense,
                   ),
                   const Divider(height: 24, thickness: 1),
                   _buildFinanceItem(
                     icon: Icons.account_balance_wallet,
                     color: balance >= 0 ? Colors.green : Colors.red,
-                    title: 'ยอดคงเหลือ',
+                    title: 'ຍອດຄົງເຫຼືອ',
                     amount: balance,
                     isTotal: true,
                   ),
@@ -267,19 +267,14 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 _buildActionButton(
                   icon: Icons.lock_outline,
-                  text: 'เปลี่ยนรหัสผ่าน',
+                  text: 'ປ່ຽນລະຫັດ',
                   onTap: goToChangePassword,
                 ),
-                const SizedBox(height: 12),
-                _buildActionButton(
-                  icon: Icons.help_outline,
-                  text: 'ช่วยเหลือ',
-                  onTap: () {},
-                ),
+
                 const SizedBox(height: 12),
                 _buildActionButton(
                   icon: Icons.logout,
-                  text: 'ออกจากระบบ',
+                  text: 'ອອກຈາກລະບົບ',
                   color: Colors.red,
                   onTap: logout,
                 ),
@@ -324,13 +319,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 Text(
-                  '฿${NumberFormat('#,###.##').format(amount)}',
+                  '${NumberFormat('#,###.##').format(amount)} ກີບ',
                   style: TextStyle(
                     fontSize: isTotal ? 18 : 16,
                     fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
                     color: isTotal ? color : Colors.black,
                   ),
                 ),
+
               ],
             ),
           ),

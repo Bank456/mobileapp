@@ -22,8 +22,8 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   String? _selectedCategory;
   DateTime _selectedDate = DateTime.now();
 
-  final List<String> _categoriesIncome = ['เงินเดือน', 'โบนัส', 'ของขวัญ', 'ลงทุน', 'อื่นๆ'];
-  final List<String> _categoriesExpense = ['อาหาร', 'เดินทาง', 'บันเทิง', 'ที่อยู่อาศัย', 'สุขภาพ', 'อื่นๆ'];
+  final List<String> _categoriesIncome = ['ເງິນເດືອນ', 'ເງິນອຸດໜູນ', 'ຂອງຂວັນ', 'ລົງທຶນ', 'ອື່ນໆ'];
+  final List<String> _categoriesExpense = ['ອາຫານ', 'ການເດີນທາງ', 'ບັນເທີງ', 'ຄ່າເຊົ່າບ້ານ', 'ສຸຂະພາບ', 'ອື່ນໆ'];
 
   bool _loading = true;
   bool _isDeleting = false;
@@ -52,12 +52,12 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
           _loading = false;
         });
       } else {
-        throw Exception('ไม่สามารถโหลดข้อมูลได้');
+        throw Exception('ບໍ່ສາມາດໂຫລດຂໍ້ມູນໄດ້');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'),
+          content: const Text('ເກີດຂໍ້ຜິດພາດໃນການໂຫລດຂໍ້ມູນ'),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
@@ -91,19 +91,19 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
         if (response.statusCode == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('อัปเดตรายการสำเร็จ'),
+              content: const Text('ອັບເດດລາຍການສຳເລັດ'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
           );
           Navigator.pop(context, true);
         } else {
-          throw Exception('เกิดข้อผิดพลาดในการอัปเดต');
+          throw Exception('ເກີດຂໍ້ຜິດພາດໃນການອັບເດດ');
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('เกิดข้อผิดพลาด: ${e.toString()}'),
+            content: Text('ເກີດຂໍ້ຜິດພາດ: ${e.toString()}'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -116,16 +116,16 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('ยืนยันการลบ'),
-        content: const Text('คุณแน่ใจว่าจะลบรายการนี้หรือไม่? การกระทำนี้ไม่สามารถยกเลิกได้'),
+        title: const Text('ຢືນຢັນການລຶບ'),
+        content: const Text('ທ່ານແນ່ໃຈທີ່ຈະລຶບລາຍການນີ້ບໍ? ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('ยกเลิก'),
+            child: const Text('ຍົກເລີກ'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('ลบ', style: TextStyle(color: Colors.red)),
+            child: const Text('ລຶບ', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -142,19 +142,19 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
         if (response.statusCode == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('ลบรายการสำเร็จ'),
+              content: const Text('ລຶບລາຍການສຳເລັດ'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
           );
           Navigator.pop(context, true);
         } else {
-          throw Exception('เกิดข้อผิดพลาดในการลบ');
+          throw Exception('ເກີດຂໍ້ຜິດພາດໃນການລຶບ');
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('เกิดข้อผิดพลาด: ${e.toString()}'),
+            content: Text('ເກີດຂໍ້ຜິດພາດ: ${e.toString()}'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -202,7 +202,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('แก้ไขรายการ'),
+        title: const Text('ແກ້ໄຂລາຍການ'),
         centerTitle: true,
         elevation: 0,
         flexibleSpace: Container(
@@ -224,9 +224,9 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ประเภทรายการ
+              // ປະເພດລາຍການ
               Text(
-                'ประเภท',
+                'ປະເພດ',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -238,7 +238,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                 children: [
                   Expanded(
                     child: ChoiceChip(
-                      label: const Text('รายรับ'),
+                      label: const Text('ລາຍຮັບ'),
                       selected: _type == 'income',
                       onSelected: (selected) {
                         setState(() {
@@ -255,7 +255,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: ChoiceChip(
-                      label: const Text('รายจ่าย'),
+                      label: const Text('ລາຍຈ່າຍ'),
                       selected: _type == 'expense',
                       onSelected: (selected) {
                         setState(() {
@@ -273,31 +273,31 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
               ),
               const SizedBox(height: 24),
 
-              // ชื่อรายการ
+              // ຊື່ລາຍການ
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'ชื่อรายการ',
+                  labelText: 'ຊື່ລາຍການ',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   prefixIcon: const Icon(Icons.title),
                 ),
                 validator: (value) =>
-                value == null || value.isEmpty ? 'กรุณากรอกชื่อรายการ' : null,
+                value == null || value.isEmpty ? 'ກະລຸນາປ້ອນຊື່ລາຍການ' : null,
               ),
               const SizedBox(height: 20),
 
-              // หมวดหมู่
+              // ໝວດໝູ່
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
-                  labelText: 'หมวดหมู่',
+                  labelText: 'ໝວດໝູ່',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   prefixIcon: const Icon(Icons.category),
                 ),
-                value: _selectedCategory,
+                value: categories.contains(_selectedCategory) ? _selectedCategory : null,
                 items: categories
                     .map((category) => DropdownMenuItem(
                   value: category,
@@ -305,38 +305,39 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                 ))
                     .toList(),
                 onChanged: (value) => setState(() => _selectedCategory = value),
-                validator: (value) => value == null ? 'กรุณาเลือกหมวดหมู่' : null,
+                validator: (value) => value == null ? 'ກະລຸນາເລືອກໝວດໝູ່' : null,
                 borderRadius: BorderRadius.circular(10),
                 isExpanded: true,
               ),
+
               const SizedBox(height: 20),
 
-              // จำนวนเงิน
+              // ຈຳນວນເງິນ
               TextFormField(
                 controller: _amountController,
                 decoration: InputDecoration(
-                  labelText: 'จำนวนเงิน',
+                  labelText: 'ຈຳນວນເງິນ',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   prefixIcon: const Icon(Icons.attach_money),
-                  suffixText: 'บาท',
+                  suffixText: 'ກີບ',
                 ),
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'กรุณากรอกจำนวนเงิน';
+                  if (value == null || value.isEmpty) return 'ກະລຸນາປ້ອນຈຳນວນເງິນ';
                   final n = double.tryParse(value);
-                  if (n == null || n <= 0) return 'กรุณากรอกจำนวนเงินที่ถูกต้อง';
+                  if (n == null || n <= 0) return 'ກະລຸນາປ້ອນຈຳນວນເງິນທີ່ຖືກຕ້ອງ';
                   return null;
                 },
               ),
               const SizedBox(height: 20),
 
-              // คำอธิบาย
+              // ຄຳອະທິບາຍ
               TextFormField(
                 controller: _descriptionController,
                 decoration: InputDecoration(
-                  labelText: 'คำอธิบาย (ไม่บังคับ)',
+                  labelText: 'ຄຳອະທິບາຍ (ບໍ່ບັງຄັບ)',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -346,13 +347,13 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
               ),
               const SizedBox(height: 20),
 
-              // วันที่
+              // ວັນທີ
               InkWell(
                 onTap: () => _selectDate(context),
                 borderRadius: BorderRadius.circular(10),
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'วันที่',
+                    labelText: 'ວັນທີ',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -369,7 +370,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
               ),
               const SizedBox(height: 32),
 
-              // ปุ่มบันทึกและลบ
+              // ປຸ່ມບັນທຶກແລະລຶບ
               Row(
                 children: [
                   Expanded(
@@ -385,7 +386,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                           elevation: 2,
                         ),
                         child: const Text(
-                          'อัปเดตรายการ',
+                          'ອັບເດດລາຍການ',
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
@@ -407,7 +408,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                         child: _isDeleting
                             ? const CircularProgressIndicator(color: Colors.white)
                             : const Text(
-                          'ลบรายการ',
+                          'ລຶບລາຍການ',
                           style: TextStyle(fontSize: 16),
                         ),
                       ),

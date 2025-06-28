@@ -6,35 +6,42 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("ข้อมูลผู้พัฒนา")),
+      appBar: AppBar(title: const Text("ຂໍ້ມູນຜູ້ພັດທະນາ")),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             Text(
-              "📱 แอปพลิเคชัน: Expense Tracker",
+              "📱 Application: Expense Tracker",
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 10),
             Text(
-              "👨‍💻 ผู้พัฒนา: Bank Srithirath",
+              "👨‍💻 ຜູ້ພັດທະນາ: sss",
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              "👨‍💻 ຜູ້ພັດທະນາ: ",
+              style: TextStyle(fontSize: 18),
+            ),Text(
+              "👨‍💻 ຜູ້ພັດທະນາ: ",
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 10),
             Text(
-              "📧 อีเมล: bank@example.com",
+              "📧 Email: bank@example.com",
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 10),
             Text(
-              "📝 เวอร์ชัน: 1.0.0 (Demo)",
+              "📝 Version: 1.0.0 (Demo)",
               style: TextStyle(fontSize: 18),
             ),
             Spacer(),
             Center(
               child: Text(
-                "ขอบคุณที่ทดลองใช้งาน!",
+                "Version: 1.0.0 (Demo)",
                 style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
               ),
             ),

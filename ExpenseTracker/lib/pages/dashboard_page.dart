@@ -17,19 +17,25 @@ class _DashboardPageState extends State<DashboardPage> {
   List transactions = [];
   bool loading = true;
   String filterType = 'all'; // all, income, expense
-  DateTime? selectedDate;
+  DateTimeRange? selectedDateRange; // เปลี่ยนจาก DateTime? เป็น DateTimeRange?
   double totalIncome = 0;
   double totalExpense = 0;
 
   String userName = '';
   String userEmail = '';
+
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    selectedDateRange = DateTimeRange(
+      start: DateTime(now.year, now.month, 1),
+      end: now,
+    );
     fetchUserInfo();
     fetchTransactions();
-
   }
+
   Future<void> fetchUserInfo() async {
     final url = 'http://10.0.2.2:5000/user/${widget.userId}';
     try {
@@ -60,9 +66,10 @@ class _DashboardPageState extends State<DashboardPage> {
         baseUrl += '&type=$filterType';
       }
 
-      if (selectedDate != null) {
-        final dateStr = selectedDate!.toIso8601String().split('T')[0];
-        baseUrl += '&date=$dateStr';
+      if (selectedDateRange != null) {
+        final startStr = selectedDateRange!.start.toIso8601String().substring(0, 10);
+        final endStr = selectedDateRange!.end.toIso8601String().substring(0, 10);
+        baseUrl += '&start_date=$startStr&end_date=$endStr';
       }
 
       final response = await http.get(Uri.parse(baseUrl));
@@ -122,21 +129,30 @@ class _DashboardPageState extends State<DashboardPage> {
     fetchTransactions();
   }
 
-  void changeDate(int days) {
-    if (selectedDate == null) return;
-
+  // ฟังก์ชันเลื่อนช่วงวันที่ (เลื่อนทั้งช่วงไปข้างหน้า/ข้างหลัง)
+  void changeDateRange(int days) {
+    if (selectedDateRange == null) return;
     setState(() {
-      selectedDate = selectedDate!.add(Duration(days: days));
+      selectedDateRange = DateTimeRange(
+        start: selectedDateRange!.start.add(Duration(days: days)),
+        end: selectedDateRange!.end.add(Duration(days: days)),
+      );
     });
     fetchTransactions();
   }
 
-  Future<void> pickDate() async {
-    final DateTime? picked = await showDatePicker(
+  // ฟังก์ชันเลือกช่วงวันที่ด้วย DateRangePicker
+  Future<void> pickDateRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
+      firstDate: DateTime(now.year - 1),
+      lastDate: now,
+      initialDateRange: selectedDateRange ??
+          DateTimeRange(
+            start: now.subtract(const Duration(days: 7)),
+            end: now,
+          ),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -155,9 +171,10 @@ class _DashboardPageState extends State<DashboardPage> {
         );
       },
     );
-    if (picked != null && picked != selectedDate) {
+
+    if (picked != null) {
       setState(() {
-        selectedDate = picked;
+        selectedDateRange = picked;
       });
       fetchTransactions();
     }
@@ -165,9 +182,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dateDisplay = selectedDate == null
+    final dateDisplay = selectedDateRange == null
         ? 'All Time'
-        : DateFormat('MMM dd, yyyy').format(selectedDate!);
+        : '${DateFormat('MMM dd, yyyy').format(selectedDateRange!.start)} - ${DateFormat('MMM dd, yyyy').format(selectedDateRange!.end)}';
 
     return Scaffold(
       appBar: AppBar(
@@ -192,13 +209,9 @@ class _DashboardPageState extends State<DashboardPage> {
         userName: userName,
         userEmail: userEmail,
       ),
-
-
-
-
       body: Column(
         children: [
-          // Summary Cards
+          // Summary Cards & Date Range Picker
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -214,16 +227,16 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             child: Column(
               children: [
-                // Date Navigation
+                // Date Navigation: ปุ่มเลื่อนช่วงวัน + ปุ่มเลือกช่วงวัน
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
                       icon: Icon(Icons.chevron_left, color: Colors.white),
-                      onPressed: () => changeDate(-1),
+                      onPressed: () => changeDateRange(-1),
                     ),
                     TextButton(
-                      onPressed: pickDate,
+                      onPressed: pickDateRange,
                       child: Text(
                         dateDisplay,
                         style: TextStyle(
@@ -235,7 +248,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     IconButton(
                       icon: Icon(Icons.chevron_right, color: Colors.white),
-                      onPressed: () => changeDate(1),
+                      onPressed: () => changeDateRange(1),
                     ),
                   ],
                 ),
@@ -247,7 +260,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Expanded(
                       child: _buildSummaryCard(
-                        'Income',
+                        'ລາຍຮັບ',
                         totalIncome,
                         Colors.green.shade400,
                         Icons.arrow_downward,
@@ -256,7 +269,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: _buildSummaryCard(
-                        'Expense',
+                        'ລາຍຈ່າຍ',
                         totalExpense,
                         Colors.red.shade400,
                         Icons.arrow_upward,
@@ -265,7 +278,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: _buildSummaryCard(
-                        'Balance',
+                        'ທັງໝົດ',
                         totalIncome - totalExpense,
                         (totalIncome - totalExpense) >= 0
                             ? Colors.green.shade400
@@ -287,9 +300,9 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildFilterButton('All', filterType == 'all', () => setFilter('all')),
-                _buildFilterButton('Income', filterType == 'income', () => setFilter('income')),
-                _buildFilterButton('Expense', filterType == 'expense', () => setFilter('expense')),
+                _buildFilterButton('ທັງໝົດ', filterType == 'all', () => setFilter('all')),
+                _buildFilterButton('ລາຍຮັບ', filterType == 'income', () => setFilter('income')),
+                _buildFilterButton('ລາຍຈ່າຍ', filterType == 'expense', () => setFilter('expense')),
               ],
             ),
           ),
@@ -315,11 +328,11 @@ class _DashboardPageState extends State<DashboardPage> {
                     color: Colors.grey.shade600,
                   ),
                 ),
-                if (selectedDate != null)
+                if (selectedDateRange != null)
                   TextButton(
                     onPressed: () {
                       setState(() {
-                        selectedDate = null;
+                        selectedDateRange = null;
                       });
                       fetchTransactions();
                     },
@@ -372,7 +385,8 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              '฿${amount.toStringAsFixed(2)}',
+              '${NumberFormat("#,##0", "en_US").format(amount)} kip',
+
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

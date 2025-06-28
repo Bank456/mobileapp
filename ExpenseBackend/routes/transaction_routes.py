@@ -195,3 +195,48 @@ def get_user_summary(user_id):
         return jsonify(result), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+@transaction_bp.route('/summary/expenses', methods=['GET'])
+def summary_by_category():
+    user_id = request.args.get('user_id')
+    type_filter = request.args.get('type')  # 'income' หรือ 'expense'
+    start_date_str = request.args.get('start_date')  # format: 'YYYY-MM-DD'
+    end_date_str = request.args.get('end_date')      # format: 'YYYY-MM-DD'
+
+    if not user_id or not type_filter:
+        return jsonify({'error': 'Missing user_id or type'}), 400
+
+    try:
+        query = db.session.query(
+            Transaction.category,
+            func.coalesce(func.sum(Transaction.amount), 0).label('total')
+        ).filter(
+            Transaction.user_id == user_id,
+            Transaction.type == type_filter
+        )
+
+        # กรองช่วงวันที่ถ้ามี
+        if start_date_str:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+            query = query.filter(Transaction.created_at >= start_date)
+
+        if end_date_str:
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+            end_date = end_date.replace(hour=23, minute=59, second=59)
+            query = query.filter(Transaction.created_at <= end_date)
+
+        query = query.group_by(Transaction.category)
+
+        results = query.all()
+
+        total_amount = sum(row.total for row in results)
+
+        return jsonify({
+            'total_expense': float(total_amount),
+            'by_category': [
+                {'category': row.category or 'ไม่ระบุ', 'amount': float(row.total)}
+                for row in results
+            ]
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

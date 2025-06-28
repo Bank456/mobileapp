@@ -28,14 +28,9 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text.trim();
 
       final result = await apiService.login(email, password);
-
-      print('Login success: $result');
-
-      // สมมติ result เป็น Map<String, dynamic> เช่น {'userId': 1, 'email': 'john@example.com'}
       final userId = result['userId'];
 
       if (userId != null) {
-        // นำทางไป Dashboard พร้อมส่ง userId
         Navigator.pushReplacementNamed(
           context,
           '/dashboard',
@@ -43,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
         );
       } else {
         setState(() {
-          _errorMessage = 'ข้อมูลผู้ใช้ไม่ครบถ้วน';
+          _errorMessage = 'ຂໍ້ມູນຜູ້ໃຊ້ບໍ່ຄົບຖ້ວນ';
         });
       }
     } catch (e) {
@@ -57,48 +52,151 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('เข้าสู่ระบบ')),
-      body: SingleChildScrollView(      // เพิ่มตรงนี้ เพื่อเลื่อนหน้าจอได้
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'อีเมล'),
-              ),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'รหัสผ่าน'),
-                obscureText: true,
-              ),
-              const SizedBox(height: 20),
+      appBar: AppBar(
+        title: const Text('ເຂົ້າສູ່ລະບົບ'),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  height: 130,
+                ),
+                const SizedBox(height: 20),
+                Card(
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        // Email
+                        TextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            labelText: 'ອີເມວ',
+                            prefixIcon: Icon(Icons.email, color: Colors.blue.shade300),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
 
-              if (_errorMessage != null)
-                Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+                        // Password
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'ລະຫັດຜ່ານ',
+                            prefixIcon: Icon(Icons.lock, color: Colors.blue.shade300),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
 
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                onPressed: _login,
-                child: const Text('เข้าสู่ระบบ'),
-              ),
+                        // Error Message
+                        if (_errorMessage != null)
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error, color: Colors.red.shade400),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: TextStyle(color: Colors.red.shade700),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        if (_errorMessage != null) const SizedBox(height: 16),
 
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RegisterPage()),
-                  );
-                },
-                child: const Text('ยังไม่มีบัญชี? สมัครสมาชิก'),
-              ),
-            ],
+                        // Login Button
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _login,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              backgroundColor: Colors.blue.shade600,
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : const Text(
+                              'ເຂົ້າສູ່ລະບົບ',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Register link
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const RegisterPage()),
+                    );
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'ຍັງບໍ່ມີບັນຊີ? ',
+                      style: TextStyle(color: Colors.grey.shade600),
+                      children: const [
+                        TextSpan(
+                          text: 'ລົງທະບຽນ',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

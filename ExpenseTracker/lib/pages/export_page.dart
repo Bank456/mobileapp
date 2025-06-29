@@ -151,7 +151,7 @@ class _ExportPageState extends State<ExportPage> {
                   return ListTile(
                     title: Text(t['title']),
                     subtitle: Text(
-                        "${t['type']} | ${t['category'] ?? 'ไม่มีหมวดหมู่'} | วันที่: ${t['created_at'].substring(0, 10)}"),
+                        "${t['type']} | ${t['category'] ?? 'ບໍ່ມີໝວດໝູ່'} | ວັນທີ: ${t['created_at'].substring(0, 10)}"),
                     trailing: Text(t['amount'].toString()),
                   );
                 },
@@ -163,4 +163,3 @@ class _ExportPageState extends State<ExportPage> {
     );
   }
 }
-

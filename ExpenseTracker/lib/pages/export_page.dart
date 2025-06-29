@@ -75,7 +75,7 @@ class _ExportPageState extends State<ExportPage> {
 
     try {
       final List<List<dynamic>> csvData = [
-        ['วันที่', 'ประเภท', 'จำนวนเงิน', 'หัวข้อ', 'ประเภทหมวดหมู่', 'หมายเหตุ'],
+        ['ວັນທີ', 'ປະເພດ', 'ຈຳນວນເງິນ', 'ຫົວຂໍ້', 'ໝວດໝູ່', 'ໝາຍເຫດ'],
         ...transactions.map((t) => [
           t['created_at'].toString().substring(0, 10),
           t['type'],

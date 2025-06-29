@@ -42,12 +42,12 @@ class _ExportPageState extends State<ExportPage> {
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("ดึงข้อมูลไม่สำเร็จ (${response.statusCode})")),
+          SnackBar(content: Text("ດຶງຂໍ້ມູນບໍ່ສຳເລັດ (${response.statusCode})")),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("เกิดข้อผิดพลาด: $e")),
+        SnackBar(content: Text("ເກີດຂໍ້ຜິດພາດ: $e")),
       );
     } finally {
       setState(() => isLoading = false);
@@ -58,7 +58,7 @@ class _ExportPageState extends State<ExportPage> {
   Future<void> exportCSV() async {
     if (transactions.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("ไม่มีข้อมูลให้ส่งออก")),
+        const SnackBar(content: Text("ບໍ່ມີຂໍ້ມູນ")),
       );
       return;
     }
@@ -92,10 +92,10 @@ class _ExportPageState extends State<ExportPage> {
       final file = File(path);
       await file.writeAsString(csv);
 
-      Share.shareXFiles([XFile(path)], text: 'ส่งออกรายงานรายรับรายจ่าย');
+      Share.shareXFiles([XFile(path)], text: 'ສົ່ງອອກລາຍງານລາຍຮັບລາຍຈ່າຍ');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("เกิดข้อผิดพลาด: $e")),
+        SnackBar(content: Text("ເກີດຂໍ້ຜິດພາດ: $e")),
       );
     } finally {
       setState(() => isLoading = false);
@@ -129,7 +129,7 @@ class _ExportPageState extends State<ExportPage> {
               icon: const Icon(Icons.date_range),
               label: Text(
                 selectedDateRange == null
-                    ? "เลือกช่วงเวลา"
+                    ? "ເລືອກວັນ"
                     : "${selectedDateRange!.start.toLocal().toString().substring(0, 10)} - ${selectedDateRange!.end.toLocal().toString().substring(0, 10)}",
               ),
               onPressed: selectDateRange,
@@ -137,13 +137,13 @@ class _ExportPageState extends State<ExportPage> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: const Icon(Icons.download),
-              label: Text(isLoading ? "กำลังโหลด..." : "ส่งออกเป็น CSV"),
+              label: Text(isLoading ? "ກຳລັງໂຫລດ..." : "ສົ່ງອອກເປັນ CSV"),
               onPressed: isLoading ? null : exportCSV,
             ),
             const SizedBox(height: 20),
             Expanded(
               child: transactions.isEmpty
-                  ? Center(child: Text(selectedDateRange == null ? "กรุณาเลือกช่วงเวลา" : "ไม่มีข้อมูลในช่วงเวลาที่เลือก"))
+                  ? Center(child: Text(selectedDateRange == null ? "ກະລຸນາເລືອກວັນ" : "ບໍ່ມີຂໍມູນວັນທີ່ເລືອກ"))
                   : ListView.builder(
                 itemCount: transactions.length,
                 itemBuilder: (context, index) {

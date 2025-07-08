@@ -8,7 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ExportPage extends StatefulWidget {
-  final int userId; // ส่ง user_id มาด้วย
+  final int userId;
   const ExportPage({super.key, required this.userId});
 
   @override
@@ -18,7 +18,7 @@ class ExportPage extends StatefulWidget {
 class _ExportPageState extends State<ExportPage> {
   DateTimeRange? selectedDateRange;
   bool isLoading = false;
-  List<dynamic> transactions = []; // เก็บข้อมูล transaction ที่ดึงมาแสดง
+  List<dynamic> transactions = [];
 
   Future<void> fetchTransactions() async {
     if (selectedDateRange == null) return;
@@ -26,7 +26,6 @@ class _ExportPageState extends State<ExportPage> {
     setState(() => isLoading = true);
 
     try {
-      // แปลงวันที่เป็นรูปแบบ 'YYYY-MM-DD' เท่านั้น
       final startDateStr = selectedDateRange!.start.toIso8601String().substring(0, 10);
       final endDateStr = selectedDateRange!.end.toIso8601String().substring(0, 10);
 
@@ -54,7 +53,6 @@ class _ExportPageState extends State<ExportPage> {
     }
   }
 
-
   Future<void> exportCSV() async {
     if (transactions.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -66,7 +64,7 @@ class _ExportPageState extends State<ExportPage> {
     final status = await Permission.storage.request();
     if (!status.isGranted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("กรุณาอนุญาตการเข้าถึงไฟล์ก่อน")),
+        const SnackBar(content: Text("ກະລຸນາອະນຸຍາດເຂົ້າເຖິງໄຟລ໌")),
       );
       return;
     }
@@ -74,6 +72,7 @@ class _ExportPageState extends State<ExportPage> {
     setState(() => isLoading = true);
 
     try {
+      // สร้างข้อมูล CSV
       final List<List<dynamic>> csvData = [
         ['ວັນທີ', 'ປະເພດ', 'ຈຳນວນເງິນ', 'ຫົວຂໍ້', 'ໝວດໝູ່', 'ໝາຍເຫດ'],
         ...transactions.map((t) => [
@@ -86,12 +85,32 @@ class _ExportPageState extends State<ExportPage> {
         ])
       ];
 
+      // รวมรายรับ รายจ่าย
+      double totalIncome = 0;
+      double totalExpense = 0;
+      for (var t in transactions) {
+        if (t['type'] == 'income') {
+          totalIncome += t['amount'];
+        } else if (t['type'] == 'expense') {
+          totalExpense += t['amount'];
+        }
+      }
+      final balance = totalIncome - totalExpense;
+
+      // แทรกบรรทัดสรุปท้ายตาราง
+      csvData.add([]);
+      csvData.add(['ລວມລາຍຮັບ', '', '', '', '', '${totalIncome.toStringAsFixed(2)} ກີບ']);
+      csvData.add(['ລວມລາຍຈ່າຍ', '', '', '', '', '${totalExpense.toStringAsFixed(2)} ກີບ']);
+      csvData.add(['ຍອດຄົງເຫຼືອ', '', '', '', '', '${balance.toStringAsFixed(2)} ກີບ']);
+
+      // เขียนไฟล์
       final csv = const ListToCsvConverter().convert(csvData);
       final directory = await getTemporaryDirectory();
       final path = "${directory.path}/expense_export.csv";
       final file = File(path);
       await file.writeAsString(csv);
 
+      // แชร์ไฟล์
       Share.shareXFiles([XFile(path)], text: 'ສົ່ງອອກລາຍງານລາຍຮັບລາຍຈ່າຍ');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -113,14 +132,14 @@ class _ExportPageState extends State<ExportPage> {
       setState(() {
         selectedDateRange = picked;
       });
-      await fetchTransactions(); // โหลดข้อมูลทันทีหลังเลือกวันที่
+      await fetchTransactions();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("ສົງອອກລາຍງານ")),
+      appBar: AppBar(title: const Text("ສົ່ງອອກລາຍງານ")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -137,13 +156,13 @@ class _ExportPageState extends State<ExportPage> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: const Icon(Icons.download),
-              label: Text(isLoading ? "ກຳລັງໂຫລດ..." : "ສົ່ງອອກເປັນ CSV"),
+              label: Text(isLoading ? "ກຳລັງດາວໂຫຼດ..." : "ສົ່ງອອກເປັນ CSV"),
               onPressed: isLoading ? null : exportCSV,
             ),
             const SizedBox(height: 20),
             Expanded(
               child: transactions.isEmpty
-                  ? Center(child: Text(selectedDateRange == null ? "ກະລຸນາເລືອກວັນ" : "ບໍ່ມີຂໍມູນວັນທີ່ເລືອກ"))
+                  ? Center(child: Text(selectedDateRange == null ? "ກະລຸນາເລືອກວັນ" : "ບໍ່ມີຂໍ້ມູນ"))
                   : ListView.builder(
                 itemCount: transactions.length,
                 itemBuilder: (context, index) {
